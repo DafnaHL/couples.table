@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מחשבון נומרולוגיה זוגי</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0e6ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        .input-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            width: 48%;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #8a2be2;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #8a2be2;
+            color: white;
+        }
+        .highlighted {
+            background-color: yellow;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="input-container">
+            <div class="input-group">
+                <input type="text" id="name1" placeholder="שם בן זוג 1">
+                <input type="date" id="date1">
+            </div>
+            <div class="input-group">
+                <input type="text" id="name2" placeholder="שם בן זוג 2">
+                <input type="date" id="date2">
+            </div>
+        </div>
+        <button onclick="calculate()">חשב</button>
+        <table id="resultTable"></table>
+    </div>
+
+    <script>
+        function gematriaValue(name) {
+            const gematria = {
+                'א': 1, 'י': 1, 'ק': 1,
+                'ב': 2, 'כ': 2, 'ר': 2,
+                'ג': 3, 'ל': 3, 'ש': 3,
+                'ד': 4, 'מ': 4, 'ת': 4,
+                'ה': 5, 'נ': 5,
+                'ו': 6, 'ס': 6,
+                'ז': 7, 'ע': 7,
+                'ח': 8, 'פ': 8,
+                'ט': 9, 'צ': 9
+            };
+            return name.split('').reduce((sum, char) => sum + (gematria[char] || 0), 0);
+        }
+
+        function reduceToSingleDigit(num) {
+            while (num > 9) {
+                num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+            }
+            return num;
+        }
+
+        function calculateBirthDay(date) {
+            return reduceToSingleDigit(parseInt(date.split('-')[2]));
+        }
+
+        function calculateDestiny(date) {
+            return reduceToSingleDigit(date.split('-').join('').split('').reduce((sum, digit) => sum + parseInt(digit), 0));
+        }
+
+        function calculateName(name) {
+            return reduceToSingleDigit(gematriaValue(name));
+        }
+
+        function calculate() {
+            const name1 = document.getElementById('name1').value;
+            const date1 = document.getElementById('date1').value;
+            const name2 = document.getElementById('name2').value;
+            const date2 = document.getElementById('date2').value;
+
+            const birthDay1 = calculateBirthDay(date1);
+            const destiny1 = calculateDestiny(date1);
+            const nameValue1 = calculateName(name1);
+
+            const birthDay2 = calculateBirthDay(date2);
+            const destiny2 = calculateDestiny(date2);
+            const nameValue2 = calculateName(name2);
+
+            const sum1 = reduceToSingleDigit(birthDay1 + destiny1 + nameValue1);
+            const sum2 = reduceToSingleDigit(birthDay2 + destiny2 + nameValue2);
+
+            const totalSum = reduceToSingleDigit(sum1 + sum2);
+
+            const table = document.getElementById('resultTable');
+            table.innerHTML = `
+                <tr>
+                    <th>סכום</th>
+                    <th>שם</th>
+                    <th>ייעוד</th>
+                    <th>יום לידה</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td>${sum1}</td>
+                    <td>${nameValue1}</td>
+                    <td>${destiny1}</td>
+                    <td>${birthDay1}</td>
+                    <td>${name1}</td>
+                </tr>
+                <tr>
+                    <td>${sum2}</td>
+                    <td>${nameValue2}</td>
+                    <td>${destiny2}</td>
+                    <td>${birthDay2}</td>
+                    <td>${name2}</td>
+                </tr>
+                <tr>
+                    <td class="highlighted">${totalSum}</td>
+                    <td>${reduceToSingleDigit(nameValue1 + nameValue2)}</td>
+                    <td>${reduceToSingleDigit(destiny1 + destiny2)}</td>
+                    <td>${reduceToSingleDigit(birthDay1 + birthDay2)}</td>
+                    <td>סכום טור</td>
+                </tr>
+            `;
+        }
+    </script>
+</body>
+</html>
